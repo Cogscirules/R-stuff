@@ -1,0 +1,86 @@
+---
+title: "Linear Modelling + Linear Mixed Effects eading"
+author: "Anja Toernqvist"
+date: "7 sep 2017"
+output: html_document
+---
+
+```{r}
+
+
+
+pitch = c(233,204,242,130,112,142)
+sex = c(rep("female", 3), rep("male",3))
+
+#Making a dataframe of the the rows created above
+
+mydf = data.frame(sex,pitch)
+
+xmdl = lm(pitch ~sex, mydf)
+summary(xmdl)
+
+#We constructed a linear model of pitch as a function on sex. This model was significant (F(1,4)=46,61, p<0.01)
+
+#The p-value of overall model has the same value as the sexmale, since this is the onl fixed effect. Were there more, the significance would have been different.
+
+mean = (mydf[mydf$sex=="female",]$pitch)
+# Above code = the mean of female voice pitch valies = very similar to the estimate value in the intercept column.
+
+age = c(14, 23, 35, 48,52,67)
+pitch = c(252,244,240, 233, 212, 204)
+mydf = data.frame(age, pitch)
+xmdl = lm(pitch ~ age, mydf)
+summary (xmdl)
+
+#Estimage for age = -0.9099 --> only means that for every 1 age you go up, the pitch of your voice will lower by 0.9099 Hz.
+
+
+#Subtracting the mean age from each value --> create a new column that is the age variable w/ the mean subtracted from it.This will be theresulting coefficient table.
+
+mydf$age.c = mydf$age - mean(mydf$age)
+xmdl = lm(pitch ~ age.c, mydf)
+summary(xmdl)
+
+#Plot a resudial plot
+plot(fitted(xmdl),residuals(xmdl))
+
+
+#It is a good idea to generate some random data to see how a plot with roughly ewual variances looks like --> 2 sets of 100 normally distributed random numbers w/ mean = 0 and sd = 1.
+
+plot(rnorm(100),rnorm(100))
+
+
+#Test for normality of residuals
+
+#histogram
+hist(residuals(xmdl))
+
+#qqplot
+qqnorm(residuals(xmdl))
+
+#Check if any infueltial datapoints are missing --> gives us DF beta values --> values with which the coefficients have to be adjusted if a particular data point is excluded. 
+
+dfbeta(xmdl)
+
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
